@@ -5,6 +5,7 @@ import logging
 import json
 
 import requests
+from contextlib import contextmanager
 
 HOST = 'https://127.0.0.1'
 PORT = 8080
@@ -33,6 +34,14 @@ class Raudio:
         '''Makes an HTTP request to the api requesting to close and terminates
         the stream, returns True if successful, False otherwise'''
         raise NotImplementedError()
+
+    @contextmanager
+    def connect(self, *args):
+        conn =  self.establish_connection(*args)
+        try:
+            yield conn
+        finally:
+            self.close_connection()
 
     def request_track_info(self) -> Song | None:
         '''Makes an HTTP request to request what song is playing. Returns the
@@ -98,3 +107,18 @@ class Raudio:
 if __name__ == '__main__':
     raudio = Raudio(HOST, PORT)
     print(raudio)
+
+    # Two usage patterns:
+    connection = raudio.establish_connection()
+    
+    # Do stuff with your raudio instance
+
+    # Don't forget to close!
+    raudio.close_connection()
+    
+    # OR:
+    with raudio.connect() as connection:
+        # Do stuff with your instance
+        pass
+
+    # Closes itself!
