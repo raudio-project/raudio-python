@@ -73,16 +73,9 @@ class Raudio:
 
         if resp.status_code != 200:
             self.logger.error('Error in making request to api')
-            return
-        
-        data = resp.json()
-
-        return Song(
-            data['title'],
-            data['album']     if 'album'     in data else None,
-            data['artist']    if 'artist'    in data else None,
-            data['album_art'] if 'album_art' in data else None
-        )
+            return False
+    
+        return True
 
     def request_skip(self) -> Song | None:
         '''Makes an HTTP request to the api for the current song to be skipped, 
